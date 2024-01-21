@@ -3,6 +3,7 @@
 from random import choice as rc
 
 from faker import Faker
+from datetime import datetime, timedelta
 
 from app import app
 from models import db, Message
@@ -13,22 +14,25 @@ usernames = [fake.first_name() for i in range(4)]
 if "Duane" not in usernames:
     usernames.append("Duane")
 
-def make_messages():
 
+def make_messages():
     Message.query.delete()
-    
+
     messages = []
 
     for i in range(20):
         message = Message(
             body=fake.sentence(),
             username=rc(usernames),
+            created_at=fake.date_time_between(start_date="-30d", end_date="now"),
+            updated_at=fake.date_time_between(start_date="-30d", end_date="now"),
         )
         messages.append(message)
 
     db.session.add_all(messages)
-    db.session.commit()        
+    db.session.commit()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     with app.app_context():
         make_messages()
